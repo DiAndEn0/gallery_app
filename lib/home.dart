@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:photo_manager/photo_manager.dart';
 
+import 'AssetThumbnail.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -95,78 +97,77 @@ class PhoneGallery extends StatefulWidget {
 }
 
 class _PhoneGalleryState extends State<PhoneGallery> {
+  List<AssetEntity> assets = [];
+  final Color shadeGrey =  Colors.grey.shade300;
+  final Color shadeBlue = Colors.blue.shade50;
 
+  Future<void> _fetchAssets() async {
+    assets = await PhotoManager.getAssetListRange(
+        start: 0,
+        end: 10000);
+    setState(() {
+
+    });
+  }
+
+  @override
+    void initState(){
+    _fetchAssets();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
     final Color primaryColor = Theme.of(context).colorScheme.primary;
-    final Color shadeGrey =  Colors.grey.shade300;
+
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Local Storage')),
+      appBar: AppBar(title: const Text('Local Storage',),
+      foregroundColor: Colors.white, backgroundColor: primaryColor,),
       drawer: Drawer(
         child: ListView(
-          padding: EdgeInsets.zero,
+          padding: const EdgeInsets.all(0),
           children: [
-            SizedBox(
-              height: 100,
-              child: DrawerHeader(
-                decoration: BoxDecoration(color: primaryColor),
-                child: Text('Account Details'),
+            UserAccountsDrawerHeader(
+              decoration: BoxDecoration(color: primaryColor ),
+              accountName: const Text(
+                //PLaceholder
+                "Guest",
+                style: TextStyle(fontSize: 18),
               ),
-            ),
-            Container(
-              //color: Colors.blue.shade50,
-              height: 150,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(10),
-                    height: 100,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadiusGeometry.circular(50),
-                      color: shadeGrey ,
-                      image: DecorationImage(
-                        image: AssetImage('images/person-icon.png'),
-                        fit: BoxFit.contain,
-                        opacity: 0.1,
-                      )
-                    ),
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        height: 25,
-                        width: 150,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadiusGeometry.circular(25),
-                          color: shadeGrey,
-                        ),
-                        child: Text('Guest',
-                        textAlign: TextAlign.left,style: TextStyle(fontSize: 16),),
-                      ),
-                      Text('example@gmail.com',)
-                    ],
-                  )
-                ],
+              //Placeholder
+              accountEmail: const Text("example@gmail.com"),
+              currentAccountPictureSize: const Size.square(50),
+              currentAccountPicture: const CircleAvatar(
+                backgroundColor: Color.fromARGB(255, 165, 255, 137),
+                child: Text(
+                  //Placeholder
+                  "G",
+                  style: TextStyle(fontSize: 30.0, color: Colors.blue),
+                ),
               ),
             ),
             ListTile(
               title: const Text('Login', textAlign: TextAlign.center,),
-              tileColor: shadeGrey,
               onTap: () {
+                //Need to do logic
+                Navigator.pop(context);
               },
             ),
           ],
         ),
       ),
       body: Center(
-        child: appState.auth ? Container(
-
+        child: appState.auth ? GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 6
+          ),
+          itemCount: assets.length,
+          itemBuilder: (_, index){
+            return AssetThumbnail(
+              asset: assets[index],
+            );
+          },
         ) : IconButton(
             onPressed: (){
               PhotoManager.requestPermissionExtend().then(
@@ -179,7 +180,7 @@ class _PhoneGalleryState extends State<PhoneGallery> {
                     }
                   },
               );
-        },
+            },
             icon: Icon(
               Icons.lock_reset_rounded
             ),
