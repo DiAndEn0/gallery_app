@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gallery_app/DefaultAppBar.dart';
+import 'package:gallery_app/RemoteGalleryView.dart';
 import 'package:provider/provider.dart';
 import 'package:photo_manager/photo_manager.dart';
 
@@ -49,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
         page = PhoneGallery();
         break;
       case 1:
-        page = Placeholder();
+        page = RemoteGalleryView();
         break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
