@@ -5,9 +5,14 @@ import 'package:photo_manager/photo_manager.dart';
 
 import 'AssetThumbnail.dart';
 
-class RemoteGalleryView extends StatelessWidget {
+class RemoteGalleryView extends StatefulWidget {
   const RemoteGalleryView({super.key});
 
+  @override
+  State<RemoteGalleryView> createState() => _RemoteGalleryViewState();
+}
+
+class _RemoteGalleryViewState extends State<RemoteGalleryView> {
   @override
   Widget build(BuildContext context) {
     final Color primaryColor = Theme.of(context).colorScheme.primary;
