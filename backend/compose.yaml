@@ -1,5 +1,6 @@
 services:
   mysql:
+    container_name: 'mysql'
     image: 'mysql:latest'
     environment:
       - 'MYSQL_DATABASE=mydatabase'
@@ -7,4 +8,4 @@ services:
       - 'MYSQL_ROOT_PASSWORD=verysecret'
       - 'MYSQL_USER=myuser'
     ports:
-      - '3306'
+      - '3306:3306'

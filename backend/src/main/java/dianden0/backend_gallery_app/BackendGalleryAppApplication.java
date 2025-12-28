@@ -9,5 +9,4 @@ public class BackendGalleryAppApplication {
     public static void main(String[] args) {
         SpringApplication.run(BackendGalleryAppApplication.class, args);
     }
-
 }
