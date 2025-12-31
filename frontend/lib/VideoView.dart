@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:chewie/chewie.dart';
+import 'package:open_file/open_file.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoView extends StatefulWidget {
@@ -24,30 +25,41 @@ class _VideoViewState extends State<VideoView>{
   late final Chewie videoPlayerWidget;
   bool initialized = false;
 
-  _initVideo() async {
-    final video = await widget.videoFile;
-    _videoPlayerController = VideoPlayerController.file(video!)
-      ..setLooping(true)
-      ..initialize().then(
-          (_) => setState(() {
-            initialized = true;
-          })
-      );
-    _chewieController = ChewieController(
-      videoPlayerController: _videoPlayerController,
-      autoPlay: true,
-      looping: true,
-    );
+  // _initVideo() async {
+  //   final video = await widget.videoFile;
+  //   _videoPlayerController = VideoPlayerController.file(video!)
+  //     ..setLooping(true)
+  //     ..initialize().then(
+  //         (_) => setState(() {
+  //           initialized = true;
+  //         })
+  //     );
+  //   _chewieController = ChewieController(
+  //     videoPlayerController: _videoPlayerController,
+  //     autoPlay: true,
+  //     looping: true,
+  //   );
+  //
+  //   videoPlayerWidget = Chewie(
+  //     controller: _chewieController,
+  //
+  //   );
+  // }
 
-    videoPlayerWidget = Chewie(
-      controller: _chewieController,
+  void _playVideoExternally() async {
+    final file = await widget.videoFile;
 
-    );
+    if (file != null) {
+      OpenFile.open(file.path);
+    } else {
+      debugPrint("Video file not found.");
+    }
   }
 
   @override
   void initState() {
-    _initVideo();
+    // _initVideo();
+    _playVideoExternally();
     super.initState();
   }
 
@@ -63,16 +75,20 @@ class _VideoViewState extends State<VideoView>{
       appBar: AppBar(
 
       ),
-      body: initialized
-      ? Scaffold(
-        body: Center(
-          child: AspectRatio(
-            aspectRatio: _videoPlayerController.value.aspectRatio,
-            child: videoPlayerWidget,
-          ),
-        ),
-      ) : const Center(
-        child: CircularProgressIndicator(),
+      // body: initialized
+      // ? Scaffold(
+      //   body: Center(
+      //     child: AspectRatio(
+      //       aspectRatio: _videoPlayerController.value.aspectRatio,
+      //       child: videoPlayerWidget,
+      //     ),
+      //   ),
+      // ) : const Center(
+      //   child: CircularProgressIndicator(),
+      // ),
+      body: ElevatedButton(
+          onPressed: _playVideoExternally,
+          child: const Text("Play Video"),
       ),
     );
   }
