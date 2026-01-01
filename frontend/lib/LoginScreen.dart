@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
+import 'package:http/http.dart' as http;
 import 'home.dart';
 
 const users =  {
@@ -27,12 +28,17 @@ class LoginScreen extends StatelessWidget {
     });
   }
 
-  Future<String?> _signupUser(SignupData data) {
-    debugPrint('Signup Name: ${data.name}, Password: ${data.password}');
+  Future<String?> _signupUser(SignupData data) async {
+    debugPrint('Signup Name: ${data.name}, Password: ${data.password}, Username: ${data.additionalSignupData?.entries.first.value}');
+
     return Future.delayed(loginTime).then((_) {
-      return null;
+
     });
   }
+
+  // Future<http.Response> createHttpSignupResponse(){
+  //    return http.post()
+  // }
 
 
   @override
@@ -50,9 +56,16 @@ class LoginScreen extends StatelessWidget {
         ));
       }, onRecoverPassword: (String p1) {
         return null;
-    },
+      },
       hideProvidersTitle: true,
       hideForgotPasswordButton: true,
-    ));
+          additionalSignupFields: [
+            UserFormField(
+              keyName: AutofillHints.username,
+              displayName: "Username",
+            ),
+          ],
+        )
+    );
   }
 }

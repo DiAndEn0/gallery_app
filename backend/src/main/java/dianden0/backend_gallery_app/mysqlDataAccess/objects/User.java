@@ -16,21 +16,12 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String email;
-    private String name;
     private String username;
     private String password;
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
 
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getEmail() {
         return email;
@@ -61,13 +52,14 @@ public class User implements UserDetails {
     @NullMarked
     @Override
     public String getUsername() {
-        return username;
+        return email;
     }
     public void setUsername(String username) {
         this.username = username;
     }
 
     @Override
+    @NullMarked
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }

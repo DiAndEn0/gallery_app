@@ -44,6 +44,7 @@ dependencies:
   open_file: ^3.3.0
 
   flutter_login: ^6.0.0
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_test:
