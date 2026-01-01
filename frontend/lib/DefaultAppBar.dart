@@ -1,8 +1,14 @@
+import 'dart:math';
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_login/theme.dart';
+import 'package:gallery_app/LoginScreen.dart';
+import 'package:gallery_app/home.dart';
 
 
-class DefaultAppBar extends StatelessWidget {
+class DefaultAppBar extends StatefulWidget {
    DefaultAppBar({
     super.key,
     required this.primaryColor,
@@ -11,13 +17,20 @@ class DefaultAppBar extends StatelessWidget {
   final Color primaryColor;
 
   @override
+  State<DefaultAppBar> createState() => _DefaultAppBarState();
+}
+
+class _DefaultAppBarState extends State<DefaultAppBar> {
+  bool loginScreen = false;
+
+  @override
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
         padding: const EdgeInsets.all(0),
         children: [
           UserAccountsDrawerHeader(
-            decoration: BoxDecoration(color: primaryColor ),
+            decoration: BoxDecoration(color: widget.primaryColor ),
             accountName: const Text(
               //PLaceholder
               "Guest",
@@ -38,10 +51,14 @@ class DefaultAppBar extends StatelessWidget {
           ListTile(
             title: const Text('Login', textAlign: TextAlign.center,),
             onTap: () {
-              //Need to do logic
               Navigator.pop(context);
-            },
-          ),
+              Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => const LoginScreen()
+                  )
+              );
+            }
+          )
         ],
       ),
     );
