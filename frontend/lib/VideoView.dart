@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:chewie/chewie.dart';
+import 'package:open_file/open_file.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoView extends StatefulWidget {
@@ -19,31 +19,68 @@ class VideoView extends StatefulWidget {
 
 
 class _VideoViewState extends State<VideoView>{
-  late final VideoPlayerController _videoPlayerController;
-  late final ChewieController _chewieController;
-  late final Chewie videoPlayerWidget;
+    VideoPlayerController? _videoPlayerController;
+    ChewieController? _chewieController;
+
+  bool codecNotSupported = false;
   bool initialized = false;
 
-  _initVideo() async {
-    final video = await widget.videoFile;
-    _videoPlayerController = VideoPlayerController.file(video!)
-      ..setLooping(true)
-      ..initialize().then(
-          (_) => setState(() {
-            initialized = true;
-          })
-      );
-    _chewieController = ChewieController(
-      videoPlayerController: _videoPlayerController,
-      autoPlay: true,
-      looping: true,
-    );
+  Future<void> _initVideo() async {
+    VideoPlayerController? localController;
+    try {
+      final video = await widget.videoFile;
 
-    videoPlayerWidget = Chewie(
-      controller: _chewieController,
+      if (video == null){
+        return;
+      }
 
-    );
+      localController = VideoPlayerController.file(video);
+
+      await localController.initialize();
+
+      if (!mounted){
+        await localController.dispose();
+        return;
+      }
+
+      setState(() {
+        _videoPlayerController = localController;
+        _chewieController = ChewieController(
+            videoPlayerController: _videoPlayerController!,
+            autoPlay: true,
+            looping: true,
+            aspectRatio: _videoPlayerController!.value.aspectRatio
+        );
+      });
+
+      setState(() {
+
+      });
+    } on Exception catch (e) {
+
+      if (localController != null) {
+        await localController.dispose();
+      }
+
+      if (!mounted) {
+        return;
+      }
+
+
+      setState(() {
+        codecNotSupported = true;
+      });
+
+      final video = await widget.videoFile;
+      if (video != null) {
+        _playVideoExternally(video);
+      }
+    }
   }
+
+  void _playVideoExternally(File file)  {
+    OpenFile.open(file.path);
+    }
 
   @override
   void initState() {
@@ -53,25 +90,21 @@ class _VideoViewState extends State<VideoView>{
 
   @override
   void dispose(){
-    _videoPlayerController.dispose();
-    _chewieController.dispose();
+    _videoPlayerController?.dispose();
+    _chewieController?.dispose();
     super.dispose();
   }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-
       ),
-      body: initialized
-      ? Scaffold(
-        body: Center(
-          child: AspectRatio(
-            aspectRatio: _videoPlayerController.value.aspectRatio,
-            child: videoPlayerWidget,
-          ),
-        ),
-      ) : const Center(
+      body: codecNotSupported ? Center(
+        child: Text("Video not supported, opening externally..."),
+      ) : _chewieController != null &&
+          _chewieController!.videoPlayerController.value.isInitialized
+          ? Chewie(controller: _chewieController!)
+          : const Center(
         child: CircularProgressIndicator(),
       ),
     );
