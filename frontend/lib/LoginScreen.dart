@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:http/http.dart' as http;
+import 'User.dart';
 import 'home.dart';
 
 const users =  {
@@ -30,15 +32,29 @@ class LoginScreen extends StatelessWidget {
 
   Future<String?> _signupUser(SignupData data) async {
     debugPrint('Signup Name: ${data.name}, Password: ${data.password}, Username: ${data.additionalSignupData?.entries.first.value}');
+    http.Response response = await createHttpSignupResponse(User(email: data.name,
+        password: data.password,
+        name: data.additionalSignupData?.entries.first.value,
+        role: 'USER'
+    )
+    );
+      return 'Succesfully Signed Up';
 
-    return Future.delayed(loginTime).then((_) {
-
-    });
+    );
   }
-
-  // Future<http.Response> createHttpSignupResponse(){
-  //    return http.post()
-  // }
+  Future<http.Response> createHttpSignupResponse(User user){
+     return http.post(
+       Uri.parse('http://localhost:8080/auth/register'),
+       headers: <String, String> {
+         'Content-Type': 'application/json; charset=UTF-8'
+       },
+       body: jsonEncode(
+         {'user' : user},
+         toEncodable: (Object? user) => user is User
+           ? User.toJson(user) : throw UnsupportedError('Cannot convert to JSON: $user')
+       )
+       );
+  }
 
 
   @override
@@ -61,8 +77,8 @@ class LoginScreen extends StatelessWidget {
       hideForgotPasswordButton: true,
           additionalSignupFields: [
             UserFormField(
-              keyName: AutofillHints.username,
-              displayName: "Username",
+              keyName: 'full_name',
+              displayName: "name",
             ),
           ],
         )

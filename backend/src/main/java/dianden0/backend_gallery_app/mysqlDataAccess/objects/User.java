@@ -16,8 +16,9 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String email;
-    private String username;
     private String password;
+    private String name;
+
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
@@ -54,8 +55,15 @@ public class User implements UserDetails {
     public String getUsername() {
         return email;
     }
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUsername(String email) {
+        this.email = email;
+    }
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
