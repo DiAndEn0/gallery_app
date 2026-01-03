@@ -61,3 +61,5 @@ android/local.properties
 google-services.json
 GoogleService-Info.plist
 
+# Local Configuration
+lib/AppConfig.dart

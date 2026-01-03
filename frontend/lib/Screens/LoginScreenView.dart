@@ -4,8 +4,9 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:http/http.dart' as http;
-import 'User.dart';
-import 'home.dart';
+import '../AppConfig.dart';
+import '../Objects/User.dart';
+import 'HomePageView.dart';
 
 const users =  {
   'dribbble@gmail.com': '12345',
@@ -32,26 +33,27 @@ class LoginScreen extends StatelessWidget {
 
   Future<String?> _signupUser(SignupData data) async {
     debugPrint('Signup Name: ${data.name}, Password: ${data.password}, Username: ${data.additionalSignupData?.entries.first.value}');
-    http.Response response = await createHttpSignupResponse(User(email: data.name,
+    http.Response response = await createHttpSignupRequest(User(email: data.name,
         password: data.password,
         name: data.additionalSignupData?.entries.first.value,
         role: 'USER'
     )
     );
-    debugPrint(response as String?);
-      return 'Succesfully Signed Up';
+      return response.body.toString();
   }
-  Future<http.Response> createHttpSignupResponse(User user){
-     return http.post(
-       Uri.parse('http://localhost:8080/auth/register'),
+
+
+  Future<http.Response> createHttpSignupRequest(User user){
+    String encodedJson = jsonEncode(
+        user,
+        toEncodable: (Object? user) => user is User
+            ? User.toJson(user) : throw UnsupportedError('Cannot convert to JSON: $user'));
+    return http.post(
+       Uri.parse('http://${AppConfig.getBaseUrl()}/auth/register'),
        headers: <String, String> {
          'Content-Type': 'application/json; charset=UTF-8'
        },
-       body: jsonEncode(
-         {'user' : user},
-         toEncodable: (Object? user) => user is User
-           ? User.toJson(user) : throw UnsupportedError('Cannot convert to JSON: $user')
-       )
+       body: encodedJson
        );
   }
 

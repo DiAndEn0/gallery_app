@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:gallery_app/DefaultAppBar.dart';
+import 'package:gallery_app/Assets/DefaultAppBar.dart';
 import 'package:provider/provider.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-import 'AssetThumbnail.dart';
 
 class RemoteGalleryView extends StatefulWidget {
   const RemoteGalleryView({super.key});
