@@ -4,8 +4,8 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login/theme.dart';
-import 'package:gallery_app/LoginScreen.dart';
-import 'package:gallery_app/home.dart';
+import 'package:gallery_app/Screens/LoginScreenView.dart';
+import 'package:gallery_app/Screens/HomePageView.dart';
 
 
 class DefaultAppBar extends StatefulWidget {

@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:gallery_app/VideoView.dart';
+import 'package:gallery_app/Assets/VideoView.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import 'ImageView.dart';
