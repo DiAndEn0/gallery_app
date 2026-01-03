@@ -38,9 +38,8 @@ class LoginScreen extends StatelessWidget {
         role: 'USER'
     )
     );
+    debugPrint(response as String?);
       return 'Succesfully Signed Up';
-
-    );
   }
   Future<http.Response> createHttpSignupResponse(User user){
      return http.post(
