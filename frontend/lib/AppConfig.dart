@@ -12,3 +12,4 @@ class AppConfig {
     return isEmulator ? emulatorBasedUrl : deviceBasedUrl;
   }
 }
+
