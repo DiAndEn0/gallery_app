@@ -1,7 +1,6 @@
 class AppConfig {
   // Enable this if your device is an emulator ran in an IDE or such
-  static const bool isEmulator = false;
-
+  static const bool isEmulator = true;
 
   static const String emulatorBasedUrl = 'http://10.0.2.2:8080';
   // If you use a physical device like an Android Phone,
