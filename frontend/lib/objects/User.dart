@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class User  {
   final String? email;
   final String? name;
-  final String role;
+  final String? role;
   final String? token;
 
   const User({required this.email,  this.name, required this.role, this.token});

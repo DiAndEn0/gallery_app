@@ -46,6 +46,7 @@ dependencies:
   flutter_login: ^6.0.0
   http: ^1.6.0
 
+  jwt_decoder: ^2.0.1
 
   flutter_secure_storage: ^9.0.0
 

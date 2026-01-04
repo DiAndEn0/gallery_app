@@ -12,4 +12,6 @@ class RegisterRequest {
     'name' : name,
     'role' : role,
   };
+
+
 }

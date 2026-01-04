@@ -1,12 +1,10 @@
 package dianden0.backend_gallery_app.mysqlDataAccess.objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jdk.jfr.DataAmount;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import tools.jackson.databind.annotation.JsonPOJOBuilder;
 
 @Data
 @Builder
@@ -24,4 +22,7 @@ public class AuthenticationResponse {
 
     @JsonProperty("role")
     private String role;
+
+    @JsonProperty("error_message")
+    private String error_message;
 }
