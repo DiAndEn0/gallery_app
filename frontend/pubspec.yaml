@@ -46,6 +46,9 @@ dependencies:
   flutter_login: ^6.0.0
   http: ^1.6.0
 
+
+  flutter_secure_storage: ^9.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
