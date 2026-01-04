@@ -16,11 +16,16 @@ class LoginScreen extends StatelessWidget {
 
 
   Future<String?> _authUser(LoginData data) async {
-    debugPrint('Name: ${data.name}, Password: ${data.password}');
+    //debugPrint('Name: ${data.name}, Password: ${data.password}');
     try {
-      LoginRequest request = LoginRequest(email: data.name, password: data.password, role: 'USER', token: AuthService().getCurrentUser()?.token);
+      LoginRequest request = LoginRequest(email: data.name, password: data.password, role: 'USER');
       http.Response response = await AuthService().createHttpLoginRequest(request);
       final Map<String, dynamic> responseData = jsonDecode(response.body);
+      print("im here");
+      if (response.statusCode != 200)
+        {
+          throw Exception('${response.statusCode} : ${responseData.remove('error_message')}');
+        }
       AuthService().handleLoginSuccess(responseData);
     } on Exception catch (e) {
       return e.toString();
@@ -29,7 +34,7 @@ class LoginScreen extends StatelessWidget {
   }
 
   Future<String?> _signupUser(SignupData data) async {
-    debugPrint('Signup Name: ${data.name}, Password: ${data.password}, Username: ${data.additionalSignupData?.entries.first.value}');
+    //debugPrint('Signup Name: ${data.name}, Password: ${data.password}, Username: ${data.additionalSignupData?.entries.first.value}');
     try {
       RegisterRequest request = RegisterRequest(email: data.name,
           password: data.password,
@@ -37,6 +42,10 @@ class LoginScreen extends StatelessWidget {
           role: 'USER');
       http.Response response = await AuthService().createHttpSignupRequest(request);
       final Map<String, dynamic> responseData = jsonDecode(response.body);
+      if (response.statusCode != 200)
+      {
+        throw Exception('${response.statusCode} : ${responseData.remove('error_message')}');
+      }
       AuthService().handleLoginSuccess(responseData);
     } on Exception catch (e) {
       return e.toString();
@@ -55,8 +64,11 @@ class LoginScreen extends StatelessWidget {
       onLogin: _authUser,
       onSignup: _signupUser,
       onSubmitAnimationCompleted: () {
+        if (!context.mounted) {
+          return;
+        }
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => const HomePage(),
+          builder: (context) => const HomePageView(),
         ));
       }, onRecoverPassword: (String p1) {
         return null;

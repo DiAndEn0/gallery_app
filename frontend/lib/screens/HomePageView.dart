@@ -8,8 +8,8 @@ import '../Assets/AssetThumbnail.dart';
 import 'PhoneGalleryView.dart';
 import 'RemoteGalleryView.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class HomePageView extends StatelessWidget {
+  const HomePageView({super.key});
 
   @override
   Widget build(BuildContext context) {

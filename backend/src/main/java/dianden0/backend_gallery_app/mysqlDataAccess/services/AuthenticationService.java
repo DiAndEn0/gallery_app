@@ -1,15 +1,21 @@
 package dianden0.backend_gallery_app.mysqlDataAccess.services;
 
 import dianden0.backend_gallery_app.mysqlDataAccess.objects.AuthenticationResponse;
+import dianden0.backend_gallery_app.mysqlDataAccess.objects.LoginRequest;
 import dianden0.backend_gallery_app.mysqlDataAccess.objects.User;
 import dianden0.backend_gallery_app.mysqlDataAccess.repos.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.management.openmbean.KeyAlreadyExistsException;
 import java.util.Optional;
 
+
+
+@Slf4j
 @Service
 public class AuthenticationService {
     private final UserRepository repository;
@@ -25,11 +31,13 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse register(User request){
+        if (repository.findByEmail(request.getEmail()).isPresent()){
+            throw new KeyAlreadyExistsException();
+        }
         User user = new User();
         user.setEmail(request.getEmail());
         user.setName(request.getName());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-
         user.setRole(request.getRole());
 
         user = repository.save(user);
@@ -42,16 +50,18 @@ public class AuthenticationService {
                 .role(user.getRole().name()).build();
     }
 
-    public AuthenticationResponse authenticate(User request){
+    public AuthenticationResponse authenticate(LoginRequest request){
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
+                        request.getEmail(),
                         request.getPassword()
                 )
         );
 
-        User user = repository.findUserByEmail(request.getUsername()).orElseThrow();
+        User user = repository.findByEmail(request.getEmail()).orElseThrow();
         String token = jwtService.generateToken(user);
+
+
 
         return AuthenticationResponse.builder()
                 .token(token)

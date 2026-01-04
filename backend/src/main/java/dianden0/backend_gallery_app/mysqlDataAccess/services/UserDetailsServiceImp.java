@@ -15,18 +15,12 @@ public class UserDetailsServiceImp implements UserDetailsService {
         this.repository = repository;
     }
 
-    @Override
+
     @NullMarked
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return repository.findUserByUsername(username)
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        return repository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
-
-    @NullMarked
-    public UserDetails loadUserByEmail(String email) throws UsernameNotFoundException {
-        return repository.findUserByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-    }
 
 }

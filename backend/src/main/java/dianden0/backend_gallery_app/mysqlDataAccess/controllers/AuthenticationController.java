@@ -1,6 +1,7 @@
 package dianden0.backend_gallery_app.mysqlDataAccess.controllers;
 
 import dianden0.backend_gallery_app.mysqlDataAccess.objects.AuthenticationResponse;
+import dianden0.backend_gallery_app.mysqlDataAccess.objects.LoginRequest;
 import dianden0.backend_gallery_app.mysqlDataAccess.objects.User;
 import dianden0.backend_gallery_app.mysqlDataAccess.services.AuthenticationService;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping(path ="/auth", method = {RequestMethod.GET, RequestMethod.POST})
+@RequestMapping(path ="/auth", method = {RequestMethod.POST, RequestMethod.GET})
 public class AuthenticationController {
 
     private final AuthenticationService authService;
@@ -19,11 +20,19 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody User request){
-        return ResponseEntity.ok(authService.register(request));
+        try {
+            return ResponseEntity.ok(authService.register(request));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(AuthenticationResponse.builder().error_message("User Already Exists").build());
+        }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody User request){
-        return ResponseEntity.ok(authService.authenticate(request));
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest request){
+        try {
+            return ResponseEntity.ok(authService.authenticate(request));
+        } catch (Exception e) {
+            return  ResponseEntity.badRequest().body(AuthenticationResponse.builder().error_message("User not found").build());
+        }
     }
 }
