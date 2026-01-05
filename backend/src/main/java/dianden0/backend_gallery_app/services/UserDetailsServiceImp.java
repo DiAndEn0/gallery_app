@@ -1,6 +1,6 @@
-package dianden0.backend_gallery_app.mysqlDataAccess.services;
+package dianden0.backend_gallery_app.services;
 
-import dianden0.backend_gallery_app.mysqlDataAccess.repos.UserRepository;
+import dianden0.backend_gallery_app.repos.UserRepository;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

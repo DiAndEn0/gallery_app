@@ -1,7 +1,7 @@
-package dianden0.backend_gallery_app.mysqlDataAccess.filters;
+package dianden0.backend_gallery_app.filters;
 
-import dianden0.backend_gallery_app.mysqlDataAccess.services.JwtService;
-import dianden0.backend_gallery_app.mysqlDataAccess.services.UserDetailsServiceImp;
+import dianden0.backend_gallery_app.services.JwtService;
+import dianden0.backend_gallery_app.services.UserDetailsServiceImp;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;

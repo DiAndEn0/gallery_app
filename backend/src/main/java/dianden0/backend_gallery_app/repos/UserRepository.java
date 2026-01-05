@@ -1,6 +1,6 @@
-package dianden0.backend_gallery_app.mysqlDataAccess.repos;
+package dianden0.backend_gallery_app.repos;
 
-import dianden0.backend_gallery_app.mysqlDataAccess.objects.User;
+import dianden0.backend_gallery_app.objects.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

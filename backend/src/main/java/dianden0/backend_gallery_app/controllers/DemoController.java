@@ -1,4 +1,4 @@
-package dianden0.backend_gallery_app.mysqlDataAccess.controllers;
+package dianden0.backend_gallery_app.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

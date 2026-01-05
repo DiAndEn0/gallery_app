@@ -1,6 +1,6 @@
-package dianden0.backend_gallery_app.mysqlDataAccess.services;
+package dianden0.backend_gallery_app.services;
 
-import dianden0.backend_gallery_app.mysqlDataAccess.objects.User;
+import dianden0.backend_gallery_app.objects.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;

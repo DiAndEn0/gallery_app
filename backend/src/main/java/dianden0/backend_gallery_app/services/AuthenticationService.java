@@ -1,9 +1,9 @@
-package dianden0.backend_gallery_app.mysqlDataAccess.services;
+package dianden0.backend_gallery_app.services;
 
-import dianden0.backend_gallery_app.mysqlDataAccess.objects.AuthenticationResponse;
-import dianden0.backend_gallery_app.mysqlDataAccess.objects.LoginRequest;
-import dianden0.backend_gallery_app.mysqlDataAccess.objects.User;
-import dianden0.backend_gallery_app.mysqlDataAccess.repos.UserRepository;
+import dianden0.backend_gallery_app.objects.AuthenticationResponse;
+import dianden0.backend_gallery_app.objects.LoginRequest;
+import dianden0.backend_gallery_app.objects.User;
+import dianden0.backend_gallery_app.repos.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,8 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
-import java.util.Optional;
-
 
 
 @Slf4j

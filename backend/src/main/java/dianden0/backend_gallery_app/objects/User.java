@@ -1,4 +1,4 @@
-package dianden0.backend_gallery_app.mysqlDataAccess.objects;
+package dianden0.backend_gallery_app.objects;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -32,6 +33,11 @@ public class User implements UserDetails {
     @Getter
     @Enumerated(value = EnumType.STRING)
     private Role role;
+
+    @Setter
+    @Getter
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<MediaItem> mediaItems = new ArrayList<>();
 
 
     @NullMarked
