@@ -1,4 +1,4 @@
-package dianden0.backend_gallery_app.objects;
+package dianden0.backend_gallery_app.entities;
 
 
 import jakarta.persistence.*;
@@ -10,13 +10,14 @@ import java.sql.Date;
 
 @Entity
 @Table(name = "media_types")
+@DiscriminatorColumn(name = "dtype", discriminatorType = DiscriminatorType.STRING)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "dtype")
 @Data
 public abstract class MediaItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
 
     @Getter
     @Setter
@@ -32,23 +33,10 @@ public abstract class MediaItem {
     @Column(nullable = false)
     private Long file_size;
 
-    @Getter
-    @Setter
-    @Column(nullable = false)
-    private Integer height;
-
-    @Getter
-    @Setter
-    @Column(nullable = false)
-    private Integer width;
 
     @Getter
     @Setter
     @ManyToOne()
     @JoinColumn(name = "user_id")
     private User user;
-
-    public String getResolution() {
-        return width +"x"+ height;
-    }
 }

@@ -3,6 +3,7 @@ package dianden0.backend_gallery_app.filters;
 import dianden0.backend_gallery_app.services.JwtService;
 import dianden0.backend_gallery_app.services.UserDetailsServiceImp;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -66,7 +67,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         }
-        }catch (ExpiredJwtException  | MalformedJwtException e) {
+        }catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"Invalid Token\", \"details\": \"" + e.getMessage() + "\"}");

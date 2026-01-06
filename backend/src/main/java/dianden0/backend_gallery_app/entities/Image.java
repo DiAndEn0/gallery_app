@@ -1,4 +1,4 @@
-package dianden0.backend_gallery_app.objects;
+package dianden0.backend_gallery_app.entities;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -9,6 +9,6 @@ import lombok.EqualsAndHashCode;
 @Entity
 @DiscriminatorValue("IMAGE")
 @Data
-public class Image extends MediaItem{
+public class Image extends MediaItem {
     
 }

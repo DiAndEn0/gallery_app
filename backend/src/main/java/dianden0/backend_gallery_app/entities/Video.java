@@ -1,4 +1,4 @@
-package dianden0.backend_gallery_app.objects;
+package dianden0.backend_gallery_app.entities;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -6,6 +6,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.mp4parser.IsoFile;
+
+import java.io.File;
+import java.io.IOException;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -15,9 +19,11 @@ public class Video extends MediaItem {
 
   @Getter
   @Setter
-  private Integer durationSeconds;
+  private double durationSeconds;
 
   @Getter
   @Setter
   private String thumbnailS3Key;
+
+
 }

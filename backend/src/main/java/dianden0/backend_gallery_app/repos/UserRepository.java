@@ -1,6 +1,6 @@
 package dianden0.backend_gallery_app.repos;
 
-import dianden0.backend_gallery_app.objects.User;
+import dianden0.backend_gallery_app.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

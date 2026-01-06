@@ -2,7 +2,7 @@ package dianden0.backend_gallery_app.controllers;
 
 import dianden0.backend_gallery_app.objects.AuthenticationResponse;
 import dianden0.backend_gallery_app.objects.LoginRequest;
-import dianden0.backend_gallery_app.objects.User;
+import dianden0.backend_gallery_app.entities.User;
 import dianden0.backend_gallery_app.services.AuthenticationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

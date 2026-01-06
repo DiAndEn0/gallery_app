@@ -2,7 +2,7 @@ package dianden0.backend_gallery_app.services;
 
 import dianden0.backend_gallery_app.objects.AuthenticationResponse;
 import dianden0.backend_gallery_app.objects.LoginRequest;
-import dianden0.backend_gallery_app.objects.User;
+import dianden0.backend_gallery_app.entities.User;
 import dianden0.backend_gallery_app.repos.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;

@@ -1,5 +1,6 @@
-package dianden0.backend_gallery_app.objects;
+package dianden0.backend_gallery_app.entities;
 
+import dianden0.backend_gallery_app.objects.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,6 +40,14 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<MediaItem> mediaItems = new ArrayList<>();
 
+    public void addMediaItem(MediaItem file)
+    {
+        this.mediaItems.add(file);
+    }
+
+    public void deleteMediaItem(MediaItem file){
+        this.mediaItems.remove(file);
+    }
 
     @NullMarked
     @Override
