@@ -4,31 +4,67 @@ import dianden0.backend_gallery_app.entities.Image;
 import dianden0.backend_gallery_app.entities.MediaItem;
 import dianden0.backend_gallery_app.entities.User;
 import dianden0.backend_gallery_app.entities.Video;
+import dianden0.backend_gallery_app.objects.FileResponse;
 import dianden0.backend_gallery_app.repos.FileRepository;
 import dianden0.backend_gallery_app.repos.UserRepository;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mp4parser.IsoFile;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.MediaTypeFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class LocalFileService implements StorageService {
+    private static final Log log = LogFactory.getLog(LocalFileService.class);
     private final UserRepository repository;
     private final FileRepository fileRepository;
 
     public LocalFileService(UserRepository repository, FileRepository fileRepository) {
         this.repository = repository;
         this.fileRepository = fileRepository;
+    }
+
+    public ResponseEntity<List<FileResponse>> fetchFiles(String email) throws IOException {
+        Optional<User> user = repository.findByEmail(email);
+        List<MediaItem> mediaItems = fileRepository.getAllByUser(user.get());
+
+        List<FileResponse> responseFiles = mediaItems.stream().map(resource -> {
+
+            MediaType mediaType = MediaTypeFactory.getMediaType(resource.getFileName())
+                    .orElse(MediaType.APPLICATION_OCTET_STREAM);
+            String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/local/view/")
+                    .path(email)
+                    .path("/")
+                    .path(resource.getFileName())
+                    .toUriString();
+
+            return FileResponse.builder()
+                    .fileName(resource.getFileName())
+                    .fileType(mediaType.toString())
+                    .size(resource.getFileSize())
+                    .downloadUrl(fileUrl).build();
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(responseFiles);
     }
 
     @Transactional
@@ -38,8 +74,8 @@ public class LocalFileService implements StorageService {
 
         List<String> fileUploadStatus = new ArrayList<>();
 
-        String filePath = System.getProperty("user.dir") + "/LocalStorage"+ File.separator+ email;
-        Path uploadPath = Paths.get(filePath);
+        String rootPath = System.getProperty("user.dir") + "/LocalStorage"+ File.separator+ email;
+        Path uploadPath = Paths.get(rootPath);
 
         if (!Files.exists(uploadPath)) {
             try {
@@ -49,43 +85,48 @@ public class LocalFileService implements StorageService {
             }
         }
 
+
         for (MultipartFile file : files )
         {
+            String originalName = file.getOriginalFilename();
+            String extension = originalName.substring(originalName.lastIndexOf("."));
+            String uniqueFileName = UUID.randomUUID().toString() + extension;
 
-            filePath = System.getProperty("user.dir") + "/LocalStorage"+ File.separator+ email + File.separator + file.getOriginalFilename();
-            if (Files.exists(Paths.get(filePath)))
+            Path filePath = uploadPath.resolve(uniqueFileName);
+
+            if (Files.exists(filePath))
             {
                 continue;
             } else {
                 try {
-                    FileOutputStream fout = new FileOutputStream(filePath);
-                    fout.write(file.getBytes());
+                    file.transferTo(filePath);
 
                     MediaItem newUploadedFile;
                     if (Objects.requireNonNull(file.getContentType()).startsWith("image")) {
                         Image image = new Image();
 
-                        image.setFile_name(file.getOriginalFilename());
-                        image.setFile_size(file.getSize());
+                        image.setFileName(originalName);
+                        image.setFileSize(file.getSize());
                         image.setDate(Date.valueOf(LocalDate.now()));
+                        image.setStorageKey(uniqueFileName);
                         image.setUser(user.orElseThrow());
 
                         newUploadedFile = image;
                     } else {
                         Video video = new Video();
 
-                        video.setFile_name(file.getOriginalFilename());
-                        video.setFile_size(file.getSize());
+                        video.setFileName(originalName);
+                        video.setFileSize(file.getSize());
                         video.setDate(Date.valueOf(LocalDate.now()));
+                        video.setStorageKey(uniqueFileName);
                         video.setUser(user.orElseThrow());
-                        double durationInSeconds = getVideoDuration(new File(filePath));
+                        double durationInSeconds = getVideoDuration(filePath.toFile());
                         video.setDurationSeconds(durationInSeconds);
 
                         newUploadedFile = video;
                     }
                     user.get().addMediaItem(newUploadedFile);
                     fileRepository.save(newUploadedFile);
-                    fout.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                     fileUploadStatus.add("Error in uploading file: " + file.getOriginalFilename() + " " + e);
@@ -94,6 +135,29 @@ public class LocalFileService implements StorageService {
         }
         return fileUploadStatus.isEmpty() ? "Files uploaded successfully" : fileUploadStatus.toString();
     }
+
+    @Override
+    public Resource loadOneFile(String email, String filename) {
+        Optional<User> user = repository.findByEmail(email);
+        MediaItem item = fileRepository.getMediaItemByUserAndFileName(user.get(), filename);
+        try {
+            Path rootPath = Paths.get(System.getProperty("user.dir"));
+            Path filePath = rootPath.resolve("LocalStorage")
+                    .resolve(email)
+                    .resolve(item.getStorageKey());
+
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists() && resource.isReadable()) {
+                return resource;
+            } else {
+                throw new RuntimeException("File not found on disk: " + item.getStorageKey());
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Invalid file path", e);
+        }
+    }
+
 
     public double getVideoDuration(File videoFile) throws IOException {
         try (IsoFile isoFile = new IsoFile(videoFile.getAbsolutePath())) {
@@ -104,4 +168,5 @@ public class LocalFileService implements StorageService {
             return (double) duration / timescale;
         }
     }
+
 }

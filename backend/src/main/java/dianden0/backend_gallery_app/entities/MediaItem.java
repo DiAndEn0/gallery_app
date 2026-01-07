@@ -21,7 +21,7 @@ public abstract class MediaItem {
 
     @Getter
     @Setter
-    private String file_name;
+    private String fileName;
 
     @Getter
     @Setter
@@ -31,7 +31,12 @@ public abstract class MediaItem {
     @Getter
     @Setter
     @Column(nullable = false)
-    private Long file_size;
+    private Long fileSize;
+
+    @Getter
+    @Setter
+    private String storageKey;
+
 
 
     @Getter
