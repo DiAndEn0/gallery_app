@@ -24,5 +24,8 @@ public class FileResponse {
     @Getter
     @Setter
     private double duration;
+    @Getter
+    @Setter
+    private String storageKey;
 
 }

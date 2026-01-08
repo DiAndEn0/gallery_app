@@ -12,6 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mp4parser.IsoFile;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
 import org.springframework.http.ResponseEntity;
@@ -61,7 +62,8 @@ public class LocalFileService implements StorageService {
                     .fileName(resource.getFileName())
                     .fileType(mediaType.toString())
                     .size(resource.getFileSize())
-                    .downloadUrl(fileUrl).build();
+                    .downloadUrl(fileUrl)
+                    .storageKey(resource.getStorageKey()).build();
         }).collect(Collectors.toList());
 
         return ResponseEntity.ok(responseFiles);
@@ -89,6 +91,7 @@ public class LocalFileService implements StorageService {
         for (MultipartFile file : files )
         {
             String originalName = file.getOriginalFilename();
+            assert originalName != null;
             String extension = originalName.substring(originalName.lastIndexOf("."));
             String uniqueFileName = UUID.randomUUID().toString() + extension;
 
@@ -128,7 +131,6 @@ public class LocalFileService implements StorageService {
                     user.get().addMediaItem(newUploadedFile);
                     fileRepository.save(newUploadedFile);
                 } catch (Exception e) {
-                    e.printStackTrace();
                     fileUploadStatus.add("Error in uploading file: " + file.getOriginalFilename() + " " + e);
                 }
             }
@@ -137,25 +139,52 @@ public class LocalFileService implements StorageService {
     }
 
     @Override
-    public Resource loadOneFile(String email, String filename) {
-        Optional<User> user = repository.findByEmail(email);
-        MediaItem item = fileRepository.getMediaItemByUserAndFileName(user.get(), filename);
+    public ResponseEntity<Resource> loadOneFile(String email, String fileKey) {
         try {
             Path rootPath = Paths.get(System.getProperty("user.dir"));
             Path filePath = rootPath.resolve("LocalStorage")
                     .resolve(email)
-                    .resolve(item.getStorageKey());
+                    .resolve(fileKey);
 
             Resource resource = new UrlResource(filePath.toUri());
 
             if (resource.exists() && resource.isReadable()) {
-                return resource;
+                MediaType mediaType = MediaTypeFactory.getMediaType(resource.getFilename())
+                        .orElse(MediaType.APPLICATION_OCTET_STREAM);
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                        .contentType(mediaType)
+                        .body(resource);
             } else {
-                throw new RuntimeException("File not found on disk: " + item.getStorageKey());
+                throw new RuntimeException("File not found on disk: " + fileKey);
             }
         } catch (MalformedURLException e) {
             throw new RuntimeException("Invalid file path", e);
         }
+    }
+
+    @Override
+    @Transactional
+    public String deleteFiles(List<String> fileKeys, String email) {
+        Optional<User> user = repository.findByEmail(email);
+
+        try {
+            Path rootPath = Paths.get(System.getProperty("user.dir"));
+            Path userPath = rootPath.resolve("LocalStorage")
+                    .resolve(email);
+            List<MediaItem> itemsToDelete = fileRepository.findAllByUserAndStorageKeyIn(user.get(), fileKeys);
+            for (MediaItem item : itemsToDelete){
+                Path filePath = userPath.resolve(item.getStorageKey());
+                Files.deleteIfExists(filePath);
+
+                fileRepository.deleteMediaItemByStorageKey(item.getStorageKey());
+                user.get().deleteMediaItem(item);
+            }
+        } catch (Exception e) {
+            return e.toString();
+        }
+
+        return "Files deleted successfully";
     }
 
 

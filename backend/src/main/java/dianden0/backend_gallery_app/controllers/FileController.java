@@ -3,17 +3,16 @@ package dianden0.backend_gallery_app.controllers;
 import dianden0.backend_gallery_app.objects.FileResponse;
 import dianden0.backend_gallery_app.services.LocalFileService;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.MediaTypeFactory;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/local", method = {RequestMethod.GET, RequestMethod.POST})
+@RequestMapping(path = "/local", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE})
 public class FileController {
     private final LocalFileService localFileService;
 
@@ -23,39 +22,38 @@ public class FileController {
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public String uploadFiles(
-            @RequestParam("files") List<MultipartFile> files,
-            @RequestParam("email") String email
+            @RequestParam List<MultipartFile> files,
+            Principal principal
     )
     {
         try {
-            return localFileService.uploadFiles(files, email);
+            return localFileService.uploadFiles(files, principal.getName());
         } catch (Exception e) {
             return e.toString();
         }
     }
 
-    // Need to make /fetch and /delete methods
-    @GetMapping("/fetch/{email}")
-    public ResponseEntity<List<FileResponse>> fetchFiles(@PathVariable String email) {
+    @GetMapping("/fetch")
+    public ResponseEntity<List<FileResponse>> fetchFiles (Principal principal) {
         try {
-            return localFileService.fetchFiles(email);
+            return localFileService.fetchFiles(principal.getName());
         } catch (Exception e) {
             return  ResponseEntity.internalServerError().build();
         }
     }
 
-    @GetMapping("/view/{email}/{filename:.+}")
-    public ResponseEntity<Resource> serveFile(@PathVariable String email, @PathVariable String filename) {
-        Resource file = localFileService.loadOneFile(email, filename);
-        MediaType mediaType = MediaTypeFactory.getMediaType(filename)
-                .orElse(MediaType.APPLICATION_OCTET_STREAM);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + file.getFilename() + "\"")
-                .contentType(mediaType)
-                .body(file);
+    @GetMapping("/view/{fileKey:.+}")
+    public ResponseEntity<Resource> serveFile(@PathVariable String fileKey, Principal  principal) {
+       return localFileService.loadOneFile(principal.getName(), fileKey);
     }
 
 
-//    @DeleteMapping("/deleteFiles")
-//    public ResponseEntity<String> deleteFiles(@RequestParam List<String>)
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteFiles(@RequestBody List<String> fileKeys, Principal principal ) {
+        try {
+            return ResponseEntity.ok(localFileService.deleteFiles(fileKeys, principal.getName()));
+        } catch (Exception e) {
+            return ResponseEntity.ok(e.toString());
+        }
+    }
 }

@@ -2,7 +2,6 @@ package dianden0.backend_gallery_app.repos;
 
 import dianden0.backend_gallery_app.entities.MediaItem;
 import dianden0.backend_gallery_app.entities.User;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,5 +14,9 @@ public interface FileRepository extends JpaRepository<MediaItem, String> {
 
     List<MediaItem> getAllByUser(User user);
 
-    MediaItem getMediaItemByUserAndFileName(User user, String filename);
+    MediaItem getMediaItemByUserAndStorageKey(User user, String fileKey);
+
+    List<MediaItem> findAllByUserAndStorageKeyIn(User user, List<String> fileKeys);
+
+    void deleteMediaItemByStorageKey(String storageKey);
 }
