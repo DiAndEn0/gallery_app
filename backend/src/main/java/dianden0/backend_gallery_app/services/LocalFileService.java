@@ -53,9 +53,7 @@ public class LocalFileService implements StorageService {
                     .orElse(MediaType.APPLICATION_OCTET_STREAM);
             String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path("/local/view/")
-                    .path(email)
-                    .path("/")
-                    .path(resource.getFileName())
+                    .path(resource.getStorageKey())
                     .toUriString();
 
             return FileResponse.builder()

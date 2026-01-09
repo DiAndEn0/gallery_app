@@ -29,10 +29,15 @@ class HomePageView extends StatelessWidget {
 
 class MyAppState extends ChangeNotifier {
   var auth = false;
+  var userAuth = false;
 
   void toggleAuth(){
     auth = true;
     notifyListeners();
+  }
+
+  void toggleUserAuth(){
+    userAuth = true;
   }
 }
 
