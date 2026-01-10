@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import '../Assets/AssetThumbnail.dart';
+import '../objects/MediaSource.dart';
 import 'HomePageView.dart';
 
 
@@ -23,7 +24,7 @@ class _RemoteGalleryViewState extends State<RemoteGalleryView> {
   late Future<List<MediaItem>?> fetched_future_files;
   final Color shadeGrey =  Colors.grey.shade300;
   final Color shadeBlue = Colors.blue.shade50;
-  bool ifFetched =false;
+  bool isAuthenticated = AuthService().getCurrentUser() != null ? true : false;
 
   @override
   void initState()  {
@@ -42,7 +43,6 @@ class _RemoteGalleryViewState extends State<RemoteGalleryView> {
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
 
     final Color primaryColor = Theme.of(context).colorScheme.primary;
     return Scaffold(
@@ -50,31 +50,28 @@ class _RemoteGalleryViewState extends State<RemoteGalleryView> {
         foregroundColor: Colors.white, backgroundColor: primaryColor,),
       drawer: DefaultAppBar(primaryColor: primaryColor),
       body: Center(
-        child: Column(
+        child: isAuthenticated ?  FutureBuilder(future: fetched_future_files, builder: (context, snapshot) {
+               switch (snapshot.connectionState) {
+                 case ConnectionState.done:
+                   files = snapshot.data;
+                   return GridView.builder(
+                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                         crossAxisCount: 4
+                     ),
+                     itemCount: files?.length,
+                     itemBuilder: (_, index){
+                       return AssetThumbnail(
+                         asset: MediaSource(AssetEntity(id: "0", typeInt: 0, width: 0, height: 0) ,files![index].downloadUrl, files![index].thumbnailUrl, files![index].duration.toInt()) ,
+                       );
+                     },
+                   );
+                 default:
+                   return CircularProgressIndicator();
+               }
+             }
+             ) : Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-             FutureBuilder(future: fetched_future_files, builder: (context, snapshot) {
-               switch (snapshot.connectionState){
-                 case ConnectionState.none:
-                   return Text("none");
-                 case ConnectionState.done:
-                   return Text(snapshot.data!.first.downloadUrl);
-                 case ConnectionState.waiting:
-                   return Text("waiting");
-                 case ConnectionState.active:
-                   return Text("Actively waiting");
-                 }
-             } ),
-            // appState.userAuth? PagedGridView(
-            //     pagingController: pagingController,
-            //     builderDelegate: PagedChildBuilderDelegate<dynamic>(
-            //       animateTransitions: true,
-            //         itemBuilder: (_, item, index) => AssetThumbnail(asset: item)
-            //     ),
-            //     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            //         crossAxisCount: 4
-            //     ),
-            // ) :
             IconButton(
               onPressed: (){
               },

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gallery_app/objects/MediaSource.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
 
@@ -50,7 +51,7 @@ class _PhoneGalleryState extends State<PhoneGallery> {
           itemCount: assets.length,
           itemBuilder: (_, index){
             return AssetThumbnail(
-              asset: assets[index],
+              asset: MediaSource(assets[index], "None", "None", 0) ,
             );
           },
         ) : IconButton(

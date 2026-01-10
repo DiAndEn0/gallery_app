@@ -43,8 +43,8 @@ public class FileController {
     }
 
     @GetMapping("/view/{fileKey:.+}")
-    public ResponseEntity<Resource> serveFile(@PathVariable String fileKey, Principal  principal) {
-       return localFileService.loadOneFile(principal.getName(), fileKey);
+    public ResponseEntity<Resource> serveFile(@PathVariable String fileKey, @RequestParam(defaultValue = "original") String type, Principal  principal) {
+       return localFileService.loadOneFile(principal.getName(), fileKey, type);
     }
 
 

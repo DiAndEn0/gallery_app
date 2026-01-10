@@ -19,22 +19,20 @@ class MediaService {
           'Authorization': 'Bearer ${AuthService().getCurrentUser()?.token}'
         },
       );
-      if (response.statusCode == 200){
+      if (response.statusCode == 200) {
         final itemList = jsonDecode(response.body);
         return getMediaListFromResponse(itemList);
+      } else {
+        return null;
       }
     } catch (e) {
       print("Error $e");
     }
-    return null;
   }
 
   static List<MediaItem>? getMediaListFromResponse(List<dynamic> response){
     try {
       List<MediaItem> mediaItems = response.map((currentItem) => MediaItem.fromJson(currentItem)).toList();
-      if (mediaItems.isNotEmpty) {
-        print(mediaItems.first.downloadUrl);
-      }
       return mediaItems;
     } on Exception catch (e) {
       print(e);

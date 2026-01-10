@@ -17,7 +17,9 @@ class MediaItem {
 
   final double duration;
 
-  MediaItem(this.fileName, this.size, this.storageKey, this.downloadUrl, {required this.fileType, required this.duration});
+  String thumbnailUrl;
+
+  MediaItem(this.fileName, this.size, this.storageKey, this.downloadUrl,  this.fileType,this.duration, this.thumbnailUrl);
 
   MediaItem.fromJson(Map<String, dynamic> json):
       fileName = json['fileType'],
@@ -25,5 +27,6 @@ class MediaItem {
       storageKey = json['storageKey'],
       downloadUrl = json['downloadUrl'],
       fileType = json['fileType'],
-      duration = json['duration'];
+      duration = json['duration'],
+      thumbnailUrl = json['thumbnailUrl'];
 }

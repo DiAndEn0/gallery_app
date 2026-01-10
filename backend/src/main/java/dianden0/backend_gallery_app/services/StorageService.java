@@ -12,7 +12,7 @@ import java.util.List;
 public interface StorageService {
     String uploadFiles(List<MultipartFile> fileList, String email);
 
-    ResponseEntity<Resource> loadOneFile(String email, String filename);
+    ResponseEntity<Resource> loadOneFile(String email, String filename, String type);
 
     String deleteFiles(List<String> files, String email);
 }

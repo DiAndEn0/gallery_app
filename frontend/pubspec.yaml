@@ -52,6 +52,7 @@ dependencies:
 
   infinite_scroll_pagination: ^4.0.0
 
+  cached_network_image:
 dev_dependencies:
   flutter_test:
     sdk: flutter

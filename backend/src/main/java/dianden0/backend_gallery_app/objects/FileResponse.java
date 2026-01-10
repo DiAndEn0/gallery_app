@@ -27,5 +27,8 @@ public class FileResponse {
     @Getter
     @Setter
     private String storageKey;
+    @Getter
+    @Setter
+    private String thumbnailUrl;
 
 }

@@ -44,4 +44,8 @@ public abstract class MediaItem {
     @ManyToOne()
     @JoinColumn(name = "user_id")
     private User user;
+
+    public String getThumbnailIdentifier() {
+        return null;
+    }
 }

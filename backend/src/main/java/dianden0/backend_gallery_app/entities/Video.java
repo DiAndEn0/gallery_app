@@ -23,7 +23,9 @@ public class Video extends MediaItem {
 
   @Getter
   @Setter
-  private String thumbnailS3Key;
-
-
+  private String thumbnailKey;
+@Override
+  public String getThumbnailIdentifier(){
+    return thumbnailKey;
+  }
 }
