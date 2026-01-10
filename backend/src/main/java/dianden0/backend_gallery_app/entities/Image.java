@@ -14,5 +14,5 @@ public class Image extends MediaItem {
     public String getThumbnailIdentifier() {
         return getStorageKey();
     }
-    
+
 }

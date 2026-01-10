@@ -48,4 +48,8 @@ public abstract class MediaItem {
     public String getThumbnailIdentifier() {
         return null;
     }
+
+    public double getDurationIdentifier(){
+        return 0.0;
+    }
 }

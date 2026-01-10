@@ -74,7 +74,8 @@ public class LocalFileService implements StorageService {
                     .size(resource.getFileSize())
                     .downloadUrl(fileUrl)
                     .storageKey(resource.getStorageKey())
-                    .thumbnailUrl(thumbnailUrl).build();
+                    .thumbnailUrl(thumbnailUrl)
+                    .duration(resource.getDurationIdentifier()).build();
         }).collect(Collectors.toList());
 
         return ResponseEntity.ok(responseFiles);

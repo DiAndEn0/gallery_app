@@ -28,4 +28,9 @@ public class Video extends MediaItem {
   public String getThumbnailIdentifier(){
     return thumbnailKey;
   }
+
+  @Override
+  public double getDurationIdentifier(){
+    return getDurationSeconds();
+  }
 }
