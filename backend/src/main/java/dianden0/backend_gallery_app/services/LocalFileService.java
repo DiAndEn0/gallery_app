@@ -114,6 +114,7 @@ public class LocalFileService implements StorageService {
                 continue;
             } else {
                 try {
+                    file.transferTo(filePath);
                     MediaItem newUploadedFile;
                     if (Objects.requireNonNull(file.getContentType()).startsWith("image")) {
                         Image image = new Image();
@@ -140,7 +141,6 @@ public class LocalFileService implements StorageService {
 
                         newUploadedFile = video;
                     }
-                    file.transferTo(filePath);
                     user.get().addMediaItem(newUploadedFile);
                     fileRepository.save(newUploadedFile);
                 } catch (Exception e) {
