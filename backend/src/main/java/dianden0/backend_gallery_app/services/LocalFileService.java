@@ -114,8 +114,6 @@ public class LocalFileService implements StorageService {
                 continue;
             } else {
                 try {
-                    file.transferTo(filePath);
-
                     MediaItem newUploadedFile;
                     if (Objects.requireNonNull(file.getContentType()).startsWith("image")) {
                         Image image = new Image();
@@ -142,6 +140,7 @@ public class LocalFileService implements StorageService {
 
                         newUploadedFile = video;
                     }
+                    file.transferTo(filePath);
                     user.get().addMediaItem(newUploadedFile);
                     fileRepository.save(newUploadedFile);
                 } catch (Exception e) {
@@ -197,6 +196,10 @@ public class LocalFileService implements StorageService {
                 Path filePath = userPath.resolve(item.getStorageKey());
                 Files.deleteIfExists(filePath);
 
+                if (item.getClass() == Video.class){
+                    Path thumbnailPath = userPath.resolve("thumbnails").resolve(item.getThumbnailIdentifier());
+                    Files.deleteIfExists(thumbnailPath);
+                }
                 fileRepository.deleteMediaItemByStorageKey(item.getStorageKey());
                 user.get().deleteMediaItem(item);
             }

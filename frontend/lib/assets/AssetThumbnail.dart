@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gallery_app/Assets/VideoView.dart' hide VideoView;
 import 'package:gallery_app/objects/MediaSource.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 
 import '../Services/AuthService.dart';
 import 'ImageView.dart';
@@ -19,12 +20,7 @@ class AssetThumbnail extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return asset.url.contains("None") ? FutureBuilder<Uint8List>(
-      future:  asset.assetEntity.thumbnailData.then((value) => value!),
-      builder: (_, snapshot) {
-        final bytes = snapshot.data;
-        if (bytes == null) return const CircularProgressIndicator();
-        return InkWell(
+    return asset.url.contains("None") ? InkWell(
           onTap: (){
             Navigator.push(
               context,
@@ -47,7 +43,14 @@ class AssetThumbnail extends StatelessWidget{
           child: Stack(
               children: [
                 Positioned.fill(
-                    child: Image.memory(bytes, fit: BoxFit.cover,)
+                    child: Image(
+                      image: AssetEntityImageProvider(
+                        asset.assetEntity,
+                        isOriginal: false,
+                        thumbnailSize: const ThumbnailSize.square(200)
+                      ),
+                      fit: BoxFit.cover,
+                    )
                 ),
                 if (asset.assetEntity.type == AssetType.video)
                   Container(
@@ -66,11 +69,8 @@ class AssetThumbnail extends StatelessWidget{
                     ),
                   )
               ]
-          ),
-        );
-      },
-    ) :
-    InkWell(
+          )
+    ) : InkWell(
       onTap: (){
         Navigator.push(
           context,

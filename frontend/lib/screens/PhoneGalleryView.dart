@@ -1,5 +1,8 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:gallery_app/objects/MediaSource.dart';
+import 'package:gallery_app/services/MediaService.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
 
@@ -14,12 +17,17 @@ class PhoneGallery extends StatefulWidget {
 }
 
 class _PhoneGalleryState extends State<PhoneGallery> {
-  List<AssetEntity> assets = [];
+  List<AssetEntity> files = [];
+  List<AssetEntity> selectedItems =[];
+  Map<int, bool> selectedMap = HashMap();
+
   final Color shadeGrey =  Colors.grey.shade300;
   final Color shadeBlue = Colors.blue.shade50;
+  bool isSelectionMode = false;
+
 
   Future<void> _fetchAssets() async {
-    assets = await PhotoManager.getAssetListRange(
+    files = await PhotoManager.getAssetListRange(
         start: 0,
         end: 10000);
     setState(() {
@@ -33,14 +41,67 @@ class _PhoneGalleryState extends State<PhoneGallery> {
     super.initState();
   }
 
+  void _upload(BuildContext context)  {
+    showDialog(
+        context: context,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+            title: const Text('Please Confirm'),
+            content: const Text('Are you sure you want to upload these files?'),
+            actions: [
+              TextButton(
+                  onPressed: () async {
+                    await MediaService.uploadSelectedItems(selectedItems);
+                    setState(()  {
+                      isSelectionMode = false;
+                      selectedItems = [];
+                      selectedMap = HashMap();
+                      Navigator.of(ctx).pop();
+                    });
+                  },
+                  child: const Text('Yes')),
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                  },
+                  child: const Text('No'))
+            ],
+          );
+        }
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    IconData selectionIcon = isSelectionMode ? Icons.check_circle_rounded : Icons.check_circle_outline_rounded;
+
     var appState = context.watch<MyAppState>();
     final Color primaryColor = Theme.of(context).colorScheme.primary;
 
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Local Storage',),
+      appBar: AppBar(
+        title: const Text('Local Storage',),
+        actions: [
+          if(isSelectionMode) IconButton(
+              onPressed: ()  {
+                if (selectedItems.isNotEmpty){
+                  _upload(context);
+                }
+                },
+              icon: Icon(Icons.upload)),
+          IconButton(
+              onPressed: () {
+                setState(() {
+                  isSelectionMode = isSelectionMode ? false: true;
+                  selectedItems = [];
+                  selectedMap = HashMap();
+                });
+              },
+              icon: Icon(selectionIcon),
+          )
+        ],
         foregroundColor: Colors.white, backgroundColor: primaryColor,),
       drawer: DefaultAppBar(primaryColor: primaryColor),
       body: Center(
@@ -48,10 +109,36 @@ class _PhoneGalleryState extends State<PhoneGallery> {
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4
           ),
-          itemCount: assets.length,
+          itemCount: files.length,
           itemBuilder: (_, index){
-            return AssetThumbnail(
-              asset: MediaSource(assets[index], "None", "None", 0) ,
+            return Stack(
+              children: [
+                AssetThumbnail(
+                asset: MediaSource(files[index], "None", "None", 0) ,
+              ),
+                if(isSelectionMode)AnimatedOpacity(
+                  opacity: selectedMap[index] == true ? 1 : 0, duration: const Duration(milliseconds: 100),
+                  child: Container(
+                    color: primaryColor.withValues(alpha: 0.5),
+                    alignment: Alignment.center,
+                    child: Icon(Icons.check_circle_rounded, color: shadeBlue,size: 50,),
+                  ),
+                ),
+                if(isSelectionMode)GestureDetector(
+                  onTap: (){
+                    setState(() {
+                      if (selectedMap.containsKey(index)) {
+                        selectedMap.remove(index);
+                        selectedItems.remove(files[index]);
+                      }
+                      else {
+                        selectedMap[index] = true;
+                        selectedItems.add(files[index]);
+                      }
+                    });
+                  },
+                ),
+              ]
             );
           },
         ) : IconButton(
