@@ -1,9 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:flutter/cupertino.dart';
-import 'package:gallery_app/Objects/User.dart';
 import 'package:gallery_app/Services/AuthService.dart';
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
@@ -63,21 +60,27 @@ class MediaService {
     return response.body;
   }
 
-  static Future<String> uploadSelectedItems(List<AssetEntity> selectedItems ) async {
+  static Future<List<String>> uploadSelectedItems(List<AssetEntity> selectedItems ) async {
     List<MultipartFile> convertedItems = await convertToMultipartFileList(selectedItems);
+    List<String> responses = [];
+    for (var i = 0; i < convertedItems.length; i += 10){
+      int start = i;
+      int end = (start + 10) > convertedItems.length ? convertedItems.length : (start + 10);
+      final request =  http.MultipartRequest('POST',Uri.parse(
+          '${AppConfig.getBaseUrl()}/local/upload')
+      )..files.addAll(convertedItems.getRange(start, end))..headers['Authorization'] = 'Bearer ${AuthService().getCurrentUser()!.token!}';
 
-    final request =  http.MultipartRequest('POST',Uri.parse(
-    '${AppConfig.getBaseUrl()}/local/upload')
-    )..files.addAll(convertedItems)..headers['Authorization'] = 'Bearer ${AuthService().getCurrentUser()!.token!}';
+      var response = await request.send();
 
-    var response = await request.send();
+      if (response.statusCode == 200){
+        responses.add("bundle  uploaded");
+      }
+      else {
+        responses.add("bundle  ${response.toString()}");
+      }
 
-    if (response.statusCode == 200){
-      return "Files Uploaded";
     }
-    else {
-      return "there was an error";
-    }
+    return responses;
   }
 
   static Future<List<MultipartFile>> convertToMultipartFileList(List<AssetEntity> selectedItems) async {

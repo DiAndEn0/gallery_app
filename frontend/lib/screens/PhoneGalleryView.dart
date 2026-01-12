@@ -2,7 +2,7 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:gallery_app/objects/MediaSource.dart';
-import 'package:gallery_app/services/MediaService.dart';
+import 'package:gallery_app/services/MediaUtils.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
 
@@ -18,10 +18,10 @@ class PhoneGallery extends StatefulWidget {
 
 class _PhoneGalleryState extends State<PhoneGallery> {
   List<AssetEntity> files = [];
-  List<AssetEntity> selectedItems =[];
+  List<AssetEntity> selectedItems = [];
   Map<int, bool> selectedMap = HashMap();
 
-  final Color shadeGrey =  Colors.grey.shade300;
+  final Color shadeGrey = Colors.grey.shade300;
   final Color shadeBlue = Colors.blue.shade50;
   bool isSelectionMode = false;
 
@@ -36,39 +36,24 @@ class _PhoneGalleryState extends State<PhoneGallery> {
   }
 
   @override
-  void initState(){
+  void initState() {
     _fetchAssets();
     super.initState();
   }
 
-  void _upload(BuildContext context)  {
-    showDialog(
-        context: context,
-        builder: (BuildContext ctx) {
-          return AlertDialog(
-            title: const Text('Please Confirm'),
-            content: const Text('Are you sure you want to upload these files?'),
-            actions: [
-              TextButton(
-                  onPressed: () async {
-                    await MediaService.uploadSelectedItems(selectedItems);
-                    setState(()  {
-                      isSelectionMode = false;
-                      selectedItems = [];
-                      selectedMap = HashMap();
-                      Navigator.of(ctx).pop();
-                    });
-                  },
-                  child: const Text('Yes')),
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(ctx).pop();
-                  },
-                  child: const Text('No'))
-            ],
-          );
-        }
-    );
+  void handleUpload(BuildContext context, List<AssetEntity> selectedItems)
+  {
+    MediaUtils.uploadConfirmation(context: context, selectedItems: selectedItems,
+        onSuccess: (String message){
+          setState(()  {
+            isSelectionMode = false;
+            selectedItems = [];
+            selectedMap = HashMap();
+          });
+          var snackBar = SnackBar(content: Text(message.toString()));
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        });
   }
 
 
@@ -87,7 +72,7 @@ class _PhoneGalleryState extends State<PhoneGallery> {
           if(isSelectionMode) IconButton(
               onPressed: ()  {
                 if (selectedItems.isNotEmpty){
-                  _upload(context);
+                  handleUpload(context, selectedItems);
                 }
                 },
               icon: Icon(Icons.upload)),

@@ -6,6 +6,7 @@ import 'package:gallery_app/Screens/LoginScreenView.dart';
 import 'package:gallery_app/Services/AuthService.dart';
 import 'package:gallery_app/objects/MediaItem.dart';
 import 'package:gallery_app/services/MediaService.dart';
+import 'package:gallery_app/services/MediaUtils.dart';
 import 'package:photo_manager/photo_manager.dart';
 import '../Assets/AssetThumbnail.dart';
 import '../objects/MediaSource.dart';
@@ -35,38 +36,25 @@ class _RemoteGalleryViewState extends State<RemoteGalleryView> {
   }
 
 
-  void _delete(BuildContext context)  {
-    showDialog(
+ void handleDelete(BuildContext context, List<MediaItem> selectedItems){
+    MediaUtils.deleteConfirmation(
         context: context,
-        builder: (BuildContext ctx) {
-          return AlertDialog(
-            title: const Text('Please Confirm'),
-            content: const Text('Are you sure to remove the box?'),
-            actions: [
-              TextButton(
-                  onPressed: () async {
-                    await MediaService.deleteSelectedItemsHttp(selectedItems);
-                    setState(()  {
-                      for (MediaItem item in selectedItems){
-                        files?.remove(files?[files!.indexOf(item)]);
-                      }
-                      isSelectionMode = false;
-                      selectedItems = [];
-                      selectedMap = HashMap();
-                      Navigator.of(ctx).pop();
-                    });
-                  },
-                  child: const Text('Yes')),
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(ctx).pop();
-                  },
-                  child: const Text('No'))
-            ],
-          );
-        }
-    );
-  }
+        selectedItems: selectedItems,
+        onSuccess: (String message){
+          setState(()  {
+            for (MediaItem item in selectedItems){
+              files?.remove(files?[files!.indexOf(item)]);
+            }
+            isSelectionMode = false;
+            selectedItems = [];
+            selectedMap = HashMap();
+          });
+
+          var snackBar = SnackBar(content: Text(message));
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        });
+ }
 
 
 
@@ -83,7 +71,7 @@ class _RemoteGalleryViewState extends State<RemoteGalleryView> {
         if(isSelectionMode) IconButton(
             onPressed: (){
               if (selectedItems.isNotEmpty){
-                _delete(context);
+                handleDelete(context, selectedItems);
               }
             },
             icon: Icon(Icons.delete)),
