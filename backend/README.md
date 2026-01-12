@@ -72,7 +72,7 @@ ports:
 
 The API is **stateless**. The server does not maintain sessions.
 
-1. **Register:** User creates an account.
+1. **Register:** User creates an account and receives a **JWT (JSON Web Token)** .
 2. **Login:** User sends credentials and receives a **JWT (JSON Web Token)**.
 3. **Access:** The Client (Flutter/Postman) must attach this token to the `Authorization` header of **every** subsequent request.
 
