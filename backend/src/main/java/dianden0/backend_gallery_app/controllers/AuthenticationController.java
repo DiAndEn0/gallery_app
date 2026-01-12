@@ -7,6 +7,7 @@ import dianden0.backend_gallery_app.services.AuthenticationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequestMapping(path ="/auth", method = {RequestMethod.POST, RequestMethod.GET})
 public class AuthenticationController {

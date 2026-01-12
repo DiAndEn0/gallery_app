@@ -1,5 +1,6 @@
 package dianden0.backend_gallery_app.entities;
 
+
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.Getter;
@@ -13,10 +14,10 @@ import java.sql.Date;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Data
 public abstract class MediaItem {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
 
     @Getter
     @Setter
@@ -35,6 +36,8 @@ public abstract class MediaItem {
     @Getter
     @Setter
     private String storageKey;
+
+
 
     @Getter
     @Setter
