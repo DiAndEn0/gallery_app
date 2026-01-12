@@ -178,3 +178,7 @@ The `DELETE` endpoint currently accepts a request body. While valid in HTTP spec
 
 The endpoint `/view/{fileKey:.+}` uses a regex to ensure Spring does not truncate file extensions (e.g., stopping at `.jpg`). Do not remove this regex.
 
+### 4. Postman File Uploading
+
+While using `/upload` with Postman be sure to know that the backend cannot process more than 10 files at once, I've tried many fixes however nothing works. The frontend handles this by splitting the request into multiple parts to handle this error.
+
