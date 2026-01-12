@@ -17,9 +17,9 @@
 ### Prerequisites
 
 1. **Java 17** or newer installed.
-2. **MySQL Server** running locally or via Docker.
+2. **MySQL Server** running locally or via Docker, will be automatically called through compose.yaml config
 3. **Postman** (optional but recommended) for API testing.
-
+4. **Docker Desktop** running in the background
 ### Configuration (`application.properties`)
 
 Before running, ensure your database and storage paths are configured.
@@ -64,7 +64,8 @@ ports:
 
 1. **Open** your  IntelliJ, look at pom.xml folder.
 2. Check your dependencies, reload if needed.
-3. Use either ``` ./mvnw spring-boot:run``` or IntelliJ's **Run** command of the BackendGalleryApplication
+3. Ensure Docker Desktop is running for the docker/compose to build a container for the MySQL
+4. Use either ``` ./mvnw spring-boot:run``` or IntelliJ's **Run** command of the BackendGalleryApplication
 ---
 
 ##  Authentication Flow
