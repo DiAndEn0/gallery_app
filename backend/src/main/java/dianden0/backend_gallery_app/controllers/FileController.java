@@ -6,8 +6,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
-
 import java.security.Principal;
 import java.util.List;
 
@@ -19,6 +17,7 @@ public class FileController {
     public FileController(LocalFileService localFileService) {
         this.localFileService = localFileService;
     }
+
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public String uploadFiles(
@@ -44,9 +43,8 @@ public class FileController {
 
     @GetMapping("/view/{fileKey:.+}")
     public ResponseEntity<Resource> serveFile(@PathVariable String fileKey, @RequestParam(defaultValue = "original") String type, Principal  principal) {
-       return localFileService.loadOneFile(principal.getName(), fileKey, type);
+        return localFileService.loadOneFile(principal.getName(), fileKey, type);
     }
-
 
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteFiles(@RequestBody List<String> fileKeys, Principal principal ) {

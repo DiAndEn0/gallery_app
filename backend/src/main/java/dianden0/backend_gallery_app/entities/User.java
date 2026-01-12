@@ -13,15 +13,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+// Represents a registered user in the database ('user' table).
+// Implements 'UserDetails' to bridge standard JPA data with Spring Security authentication.
 @Entity
 @Table(name = "user")
 public class User implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    // Used as the unique 'username' for Spring Security login.
     @Getter
     @Setter
     private String email;
+
     @Getter
     @Setter
     private String password;
@@ -49,11 +55,13 @@ public class User implements UserDetails {
         this.mediaItems.remove(file);
     }
 
+
     @NullMarked
     @Override
     public String getUsername() {
         return email;
     }
+
     public void setUsername(String email) {
         this.email = email;
     }
@@ -63,6 +71,7 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
+
 
     @Override
     public boolean isAccountNonExpired() {
@@ -83,5 +92,4 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
 }

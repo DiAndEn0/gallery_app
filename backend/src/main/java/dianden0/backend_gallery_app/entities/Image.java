@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 @DiscriminatorValue("IMAGE")
 @Data
 public class Image extends MediaItem {
+
     @Override
     public String getThumbnailIdentifier() {
         return getStorageKey();
