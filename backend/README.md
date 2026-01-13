@@ -17,9 +17,9 @@
 ### Prerequisites
 
 1. **Java 17** or newer installed.
-2. **MySQL Server** running locally or via Docker.
+2. **MySQL Server** running locally or via Docker, will be automatically called through compose.yaml config
 3. **Postman** (optional but recommended) for API testing.
-
+4. **Docker Desktop** running in the background
 ### Configuration (`application.properties`)
 
 Before running, ensure your database and storage paths are configured.
@@ -64,14 +64,15 @@ ports:
 
 1. **Open** your  IntelliJ, look at pom.xml folder.
 2. Check your dependencies, reload if needed.
-3. Use either ``` ./mvnw spring-boot:run``` or IntelliJ's **Run** command of the BackendGalleryApplication
+3. Ensure Docker Desktop is running for the docker/compose to build a container for the MySQL
+4. Use either ``` ./mvnw spring-boot:run``` or IntelliJ's **Run** command of the BackendGalleryApplication
 ---
 
 ##  Authentication Flow
 
 The API is **stateless**. The server does not maintain sessions.
 
-1. **Register:** User creates an account.
+1. **Register:** User creates an account and receives a **JWT (JSON Web Token)** .
 2. **Login:** User sends credentials and receives a **JWT (JSON Web Token)**.
 3. **Access:** The Client (Flutter/Postman) must attach this token to the `Authorization` header of **every** subsequent request.
 
@@ -176,4 +177,8 @@ The `DELETE` endpoint currently accepts a request body. While valid in HTTP spec
 ### 3. File Extension Handling
 
 The endpoint `/view/{fileKey:.+}` uses a regex to ensure Spring does not truncate file extensions (e.g., stopping at `.jpg`). Do not remove this regex.
+
+### 4. Postman File Uploading
+
+While using `/upload` with Postman be sure to know that the backend cannot process more than 10 files at once, I've tried many fixes however nothing works. The frontend handles this by splitting the request into multiple parts to handle this error.
 
