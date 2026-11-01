@@ -5,7 +5,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
 @Import(TestcontainersConfiguration.class)
-@SpringBootTest
+@SpringBootTest(properties = "security.jwt.secret-key=dGVzdC1vbmx5LWtleS1mb3ItY29udGV4dC1sb2Fkcy10ZXN0cw==")
 class BackendGalleryAppApplicationTests {
 
     @Test
