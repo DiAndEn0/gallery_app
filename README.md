@@ -56,6 +56,15 @@ This project demonstrates a stateless, decoupled architecture designed for resil
 
 Navigate to the backend directory and run the Spring Boot server:
 
+Set the JWT signing key first (a Base64 string of at least 32 bytes):
+
+```bash
+export JWT_SECRET_KEY=$(openssl rand -base64 32)
+```
+
+*In IntelliJ, add `JWT_SECRET_KEY` under Run Configuration → Environment variables.*
+
+
 Use the IntelliJ **Run** command or `./mvnw spring-boot:run`
 
 *Server will start at `http://localhost:8080`.*
